@@ -7,6 +7,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -22,6 +24,10 @@ public class MainActivity extends AppCompatActivity {
     TextView[][] textViews;             //declaring a 2D array of TextView
     int size = 4;                       //size of the board game
     Button btn_newGame;
+    TextView timer ;
+    long millisecondTime, startTime, timeBuff, updateTime = 0L ;
+    Handler handler;
+    int seconds, minutes, milliSeconds;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -29,17 +35,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         gridLayout = findViewById(R.id.grid_layout);        //setting the var with the id
+        timer = (TextView)findViewById(R.id.timer);
+        handler = new Handler();
         btn_newGame = (Button) findViewById(R.id.btn_new_game);
         btn_newGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(MainActivity.this, "New Game", Toast.LENGTH_SHORT).show();
-                Intent i = new Intent(getBaseContext(), MainActivity.class); //change it to your main class
+                Intent i = new Intent(getBaseContext(), MainActivity.class);
                 //the following 2 tags are for clearing the backStack and start fresh
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 finish();
                 startActivity(i);
+
             }
         });
         layoutSwipe = findViewById(R.id.layout_swipe);      //setting the var with the id
@@ -52,26 +61,30 @@ public class MainActivity extends AppCompatActivity {
             - then check if we won.
              */
             public void onSwipeTop() {
-                Toast.makeText(MainActivity.this, "top", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "top", Toast.LENGTH_SHORT).show();
                 game.getNewBoard().moveDown();
+                startTime();
                 drawBoard();
                 checkWin();
             }
             public void onSwipeRight() {
-                Toast.makeText(MainActivity.this, "right", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "right", Toast.LENGTH_SHORT).show();
                 game.getNewBoard().moveLeft();
+                startTime();
                 drawBoard();
                 checkWin();
             }
             public void onSwipeLeft() {
-                Toast.makeText(MainActivity.this, "left", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "left", Toast.LENGTH_SHORT).show();
                 game.getNewBoard().moveRight();
+                startTime();
                 drawBoard();
                 checkWin();
             }
             public void onSwipeBottom() {
-                Toast.makeText(MainActivity.this, "bottom", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "bottom", Toast.LENGTH_SHORT).show();
                 game.getNewBoard().moveUp();
+                startTime();
                 drawBoard();
                 checkWin();
             }
@@ -113,11 +126,49 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public Runnable runnable = new Runnable() {
+
+        @SuppressLint({"DefaultLocale", "SetTextI18n"})
+        public void run() {
+
+            millisecondTime = SystemClock.uptimeMillis() - startTime;
+
+            updateTime = timeBuff + millisecondTime;
+
+            seconds = (int) (updateTime / 1000);
+
+            minutes = seconds / 60;
+
+            seconds = seconds % 60;
+
+            milliSeconds = (int) (updateTime % 1000);
+
+            timer.setText(String.format("%02d", minutes) + ":" + String.format("%02d", seconds));
+
+            handler.postDelayed(this, 0);
+        }
+
+    };
+
     private void checkWin(){        //checks if the user won the game
         if(game.getNewBoard().isWinning()){
             Toast.makeText(MainActivity.this,"You Win!", Toast.LENGTH_LONG).show();
+            pauseTime();
         }
 
+    }
+
+    private void pauseTime(){
+        timeBuff += millisecondTime;
+
+        handler.removeCallbacks(runnable);
+    }
+
+    private void startTime(){
+        if(startTime<=0){
+            startTime = SystemClock.uptimeMillis();
+            handler.postDelayed(runnable, 0);
+        }
     }
 
 
