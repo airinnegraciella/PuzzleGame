@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,16 +17,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
-    Game game = new Game();             //create a new game
-    GridLayout gridLayout;              //declaring the layout(grid)
-    RelativeLayout layoutSwipe;         //declaring the layout(relative) - for swiping
-    TextView[][] textViews;             //declaring a 2D array of TextView
-    int size = 4;                       //size of the board game
-    Button btn_newGame;
-    TextView timer ;
-    long millisecondTime, startTime, timeBuff, updateTime = 0L ;
-    Handler handler;
-    int seconds, minutes, milliSeconds;
+    Game game = new Game();                                             //create a new game
+    GridLayout gridLayout;                                              //declaring the layout(grid)
+    RelativeLayout layoutSwipe;                                         //declaring the layout(relative) - for swiping
+    TextView[][] textViews;                                             //declaring a 2D array of TextView
+    int size = 4;                                                       //size of the board game
+    Button btn_newGame;                                                 //declaring the 'new game' button
+    TextView timer ;                                                    //declaring the timer TextView
+    long millisecondTime, startTime, timeBuff, updateTime = 0L ;        //declaring timer variables
+    Handler handler;                                                    //declaring the handler for the timer
+    int seconds, minutes, milliSeconds;                                 //declaring timer units
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -35,9 +34,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         gridLayout = findViewById(R.id.grid_layout);        //setting the var with the id
-        timer = (TextView)findViewById(R.id.timer);
-        handler = new Handler();
-        btn_newGame = (Button) findViewById(R.id.btn_new_game);
+        timer = (TextView)findViewById(R.id.timer);         //setting the var with the id
+        handler = new Handler();                            //creating a new handler
+        btn_newGame = (Button) findViewById(R.id.btn_new_game);     //setting the var with the id
         btn_newGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
             on every swipe motion:
             - the 'blank' tile goes the opposite direction of the swipe.
             because the moving function is to swap the 'blank' tile with the 'targeted' tile
+            - the timer will start at the first swipe motion
             - then update the board with drawBoard().
             - then check if we won.
              */
