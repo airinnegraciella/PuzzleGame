@@ -5,8 +5,11 @@ import androidx.core.content.ContextCompat;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -18,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     RelativeLayout layoutSwipe;         //declaring the layout(relative) - for swiping
     TextView[][] textViews;             //declaring a 2D array of TextView
     int size = 4;                       //size of the board game
+    Button btn_newGame;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -25,6 +29,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         gridLayout = findViewById(R.id.grid_layout);        //setting the var with the id
+        btn_newGame = (Button) findViewById(R.id.btn_new_game);
+        btn_newGame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this, "New Game", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(getBaseContext(), MainActivity.class); //change it to your main class
+                //the following 2 tags are for clearing the backStack and start fresh
+                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                finish();
+                startActivity(i);
+            }
+        });
         layoutSwipe = findViewById(R.id.layout_swipe);      //setting the var with the id
         layoutSwipe.setOnTouchListener(new OnSwipeTouchListener(this){      //swiping motion (custom class)
             /*
